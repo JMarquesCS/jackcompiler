@@ -42,6 +42,29 @@ public class ParserTest extends TestSupport {
           result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
           assertEquals(expectedResult, result);    
     }
+    @Test
+    public void testParseExpressionSimple() {
+        var input = "10+20";
+        var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
+        parser.parseExpression();
+        
+        var expectedResult =  """
+          <expression>
+          <term>
+          <integerConstant> 10 </integerConstant>
+          </term>
+          <symbol> + </symbol>
+          <term>
+          <integerConstant> 20 </integerConstant>
+          </term>
+          </expression>
+          """;
+              
+          var result = parser.XMLOutput();
+          result = result.replaceAll("\r", ""); 
+          expectedResult = expectedResult.replaceAll("  ", "");
+          assertEquals(expectedResult, result);    
+    }
   }
   /* 
     @Test
@@ -369,5 +392,4 @@ public class ParserTest extends TestSupport {
 
     }
 
-}
-    */
+}*/

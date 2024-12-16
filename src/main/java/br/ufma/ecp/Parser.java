@@ -110,6 +110,11 @@ public class Parser {
         match(TokenType.NUMBER);
     }
 
+    void number () {
+        System.out.println(currentToken.lexeme);
+        match(TokenType.NUMBER);
+    }
+
    private void match(TokenType t) {
         if (currentToken.type == t) {
             nextToken();
@@ -139,5 +144,19 @@ public class Parser {
     public String VMOutput() {
         return "";
     }
+    // Incluindo Operadores
+    static public boolean isOperator(String op) {
+        return "+-*/<>=~&|".contains(op);
+    }
 
+    
+    void parseExpression() {
+        printNonTerminal("expression");
+        parseTerm();
+        while (isOperator(peekToken.lexeme)) {
+            expectPeek(peekToken.type);
+            parseTerm();
+        }
+        printNonTerminal("/expression");
+    }
 }
