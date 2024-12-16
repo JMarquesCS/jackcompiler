@@ -382,7 +382,7 @@ public class ParserTest extends TestSupport {
       result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
       assertEquals(expectedResult, result);
   }
-  /*
+
   
    @Test
    public void testParserWithLessSquareGame() throws IOException {
@@ -414,5 +414,5 @@ public class ParserTest extends TestSupport {
        expectedResult = expectedResult.replaceAll("  ", "");
        assertEquals(expectedResult, result);
    }
-   */
+
 }

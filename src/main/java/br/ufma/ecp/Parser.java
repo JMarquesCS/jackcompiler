@@ -13,10 +13,15 @@ public class Parser {
     private Token peekToken;
     private StringBuilder xmlOutput = new StringBuilder();
     private String className;
+    private int ifLabelNum;
+    private int whileLabelNum;
 
     public Parser(byte[] input) {
         scan = new Scanner(input);
         nextToken();
+
+        ifLabelNum = 0;
+        whileLabelNum = 0;
     }
 
     public void nextToken() {
@@ -195,12 +200,28 @@ public class Parser {
     }
 
     // subroutineDec
-    public void parseSubroutineDec() {
+    /*public void parseSubroutineDec() {
+        printNonTerminal("subroutineDec");
+        expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
+        var subroutineType = currentToken.type;
+        expectPeek(TokenType.VOID, TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
+        expectPeek(TokenType.IDENT);
+        var functionName = className + "." + currentToken.value();
+        expectPeek(TokenType.LPAREN);
+        parseParameterList();
+        expectPeek(TokenType.RPAREN);
+        parseSubroutineBody(functionName, subroutineType);
+        printNonTerminal("/subroutineDec");
+    }*/
+    void parseSubroutineDec() {
         printNonTerminal("subroutineDec");
 
+        ifLabelNum = 0;
+        whileLabelNum = 0;
         expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
         var subroutineType = currentToken.type;
 
+        // 'int' | 'char' | 'boolean' | className
         expectPeek(TokenType.VOID, TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
         expectPeek(TokenType.IDENT);
 
@@ -209,7 +230,6 @@ public class Parser {
         expectPeek(TokenType.LPAREN);
         parseParameterList();
         expectPeek(TokenType.RPAREN);
-        parseSubroutineBody();
         parseSubroutineBody(functionName, subroutineType);
         printNonTerminal("/subroutineDec");
     }
@@ -218,20 +238,20 @@ public class Parser {
     public void parseParameterList() {
         printNonTerminal("parameterList");
 
-        if (peekTokenIs(TokenType.RPAREN)) {
+        if (!peekTokenIs(TokenType.RPAREN)) {
             expectPeek(TokenType.VOID, TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
-            String type = currentToken.value();
+            //String type = currentToken.value();
 
             expectPeek(TokenType.IDENT);
-            String name = currentToken.value();
+            //String name = currentToken.value();
 
             while (peekTokenIs(TokenType.COMMA)) {
                 expectPeek(TokenType.COMMA);
                 expectPeek(TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
-                type = currentToken.value();
+                //type = currentToken.value();
 
                 expectPeek(TokenType.IDENT);
-                name = currentToken.value();
+                //name = currentToken.value();
             }
 
         }
@@ -399,6 +419,28 @@ public class Parser {
                 break;
             case IDENT:
                 expectPeek(TokenType.IDENT);
+                if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
+                    parseSubroutineCall();
+                } else { // variavel comum ou array
+                    if (peekTokenIs(TokenType.LBRACKET)) { // array
+                        expectPeek(TokenType.LBRACKET);
+                        parseExpression();
+                        expectPeek(TokenType.RBRACKET);
+                    }
+                }
+                break;            
+            case INT:
+                expectPeek(TokenType.INT);
+                break;
+            case LPAREN:
+                expectPeek(TokenType.LPAREN);
+                parseExpression();
+                expectPeek(TokenType.RPAREN);
+                break;
+            case MINUS:
+            case NOT:
+                expectPeek(TokenType.MINUS, TokenType.NOT);
+                parseTerm();
                 break;
             default:
                 throw error(peekToken, "term expected");
