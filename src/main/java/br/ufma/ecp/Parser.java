@@ -149,7 +149,7 @@ public class Parser {
         return "+-*/<>=~&|".contains(op);
     }
 
-    
+
     void parseExpression() {
         printNonTerminal("expression");
         parseTerm();
@@ -158,5 +158,20 @@ public class Parser {
             parseTerm();
         }
         printNonTerminal("/expression");
+    }
+        // Comando Let
+    void parseLet() {
+        printNonTerminal("letStatement");
+        expectPeek(TokenType.LET);
+        expectPeek(TokenType.IDENT);
+        if (peekTokenIs(TokenType.LBRACKET)) {
+            expectPeek(TokenType.LBRACKET);
+            parseExpression();
+            expectPeek(TokenType.RBRACKET);
+        }
+        expectPeek(TokenType.EQ);
+        parseExpression();
+        expectPeek(TokenType.SEMICOLON);
+        printNonTerminal("/letStatement");
     }
 }
