@@ -10,7 +10,7 @@ public class Parser {
 
     private Token peekToken;
     private StringBuilder xmlOutput = new StringBuilder();
-
+    private String className;
     
     public Parser (byte[] input) {
         scan = new Scanner(input);
@@ -174,4 +174,22 @@ public class Parser {
         expectPeek(TokenType.SEMICOLON);
         printNonTerminal("/letStatement");
     }
+    // Elementos sintáticos
+    // classdef
+    public void parseCLass() {
+        printNonTerminal("class");
+        
+        expectPeek(TokenType.CLASS);
+        expectPeek(TokenType.LBRACE);
+        while (peekTokenIs(TokenType.STATIC) || peekTokenIs(TokenType.FIELD)) {
+            parseClassVarDec();
+        }
+        while (peekTokenIs(TokenType.FUNCTION) || peekTokenIs(TokenType.CONSTRUCTOR) || peekTokenIs(TokenType.METHOD)) {
+            parseSubroutineDec();
+        }
+        
+        expectPeek(TokenType.RBRACE);
+        printNonTerminal("/class");
+    }
+    
 }
