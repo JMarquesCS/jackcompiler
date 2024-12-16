@@ -65,65 +65,27 @@ public class Parser {
         }
         return new ParseError();
     }
-
-        // New
-    void parseTerm() {
-        printNonTerminal("term");
-        switch (peekToken.type) {
-          case NUMBER:
-            expectPeek(TokenType.NUMBER);
-            break;
-          case STRING:
-            expectPeek(TokenType.STRING);
-            break;
-          case FALSE:
-          case NULL:
-          case TRUE:
-            expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
-            break;
-          case THIS:
-            expectPeek(TokenType.THIS);
-            break;
-          case IDENT:
-            expectPeek(TokenType.IDENT);
-            break;
-          default:
-            throw error(peekToken, "term expected");
-        }
-    
-        printNonTerminal("/term");
-      }
       
     // Old  
-    void expr () {
+    void expr() {
         number();
         oper();
     }
 
-    void number () {
+    void number() {
         System.out.println(currentToken.lexeme);
         match(TokenType.NUMBER);
     }
 
-    void number () {
-        System.out.println(currentToken.lexeme);
-        match(TokenType.NUMBER);
-    }
-
-    void number () {
-        System.out.println(currentToken.lexeme);
-        match(TokenType.NUMBER);
-    }
-
-   private void match(TokenType t) {
+    private void match(TokenType t) {
         if (currentToken.type == t) {
             nextToken();
-        }else {
+        } else {
             throw new Error("syntax error");
         }
-   }
+    }
 
-    void oper () {
+    void oper() {
         if (currentToken.type == TokenType.PLUS) {
             match(TokenType.PLUS);
             number();
@@ -144,21 +106,13 @@ public class Parser {
     public String VMOutput() {
         return "";
     }
+
     // Incluindo Operadores
+
     static public boolean isOperator(String op) {
         return "+-*/<>=~&|".contains(op);
     }
 
-
-    void parseExpression() {
-        printNonTerminal("expression");
-        parseTerm();
-        while (isOperator(peekToken.lexeme)) {
-            expectPeek(peekToken.type);
-            parseTerm();
-        }
-        printNonTerminal("/expression");
-    }
         // Comando Let
     void parseLet() {
         printNonTerminal("letStatement");
@@ -331,6 +285,81 @@ public class Parser {
         }
         expectPeek(TokenType.SEMICOLON);
         printNonTerminal("/returnStatement");
+    }
+
+    // Expressions
+    void parseExpression() {
+        printNonTerminal("expression");
+        parseTerm ();
+        while (isOperator(peekToken.lexeme)) {
+            expectPeek(peekToken.type);
+            parseTerm();
+        }
+        printNonTerminal("/expression");
+  }
+    void parseTerm() {
+        printNonTerminal("term");
+        switch (peekToken.type) {
+            case NUMBER:
+                expectPeek(TokenType.NUMBER);
+                break;
+            case STRING:
+                expectPeek(TokenType.STRING);
+                break;
+            case FALSE:
+            case NULL:
+            case TRUE:
+                expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
+                break;
+            case THIS:
+                expectPeek(TokenType.THIS);
+                break;
+            case IDENT:
+                expectPeek(TokenType.IDENT);
+                break;
+            default:
+                throw error(peekToken, "term expected");
+        }
+        printNonTerminal("/term");
+    }
+    public void parseSubroutineCall() {
+        if (peekTokenIs(TokenType.LPAREN)) {
+            expectPeek(TokenType.LPAREN);
+            parseExpressionList();
+            expectPeek(TokenType.RPAREN);
+            /* functionName = className + "." + TokenType.IDENT; */
+        } else {
+            expectPeek(TokenType.DOT);
+            expectPeek(TokenType.IDENT);
+            /* functionName += currentToken.value(); */
+            expectPeek(TokenType.LPAREN);
+            parseExpressionList();
+            expectPeek(TokenType.RPAREN);
+        }
+    }
+    public int parseExpressionList() {
+        printNonTerminal("expressionList");
+        var nArgs = 0;
+        if (!peekTokenIs(TokenType.RPAREN)) {
+            parseExpression();
+            nArgs = 1;
+        }
+        while (peekTokenIs(TokenType.COMMA)) {
+            expectPeek(TokenType.COMMA);
+            parseExpression();
+            nArgs++;
+        }
+        printNonTerminal("/expressionList");
+        return nArgs;
+    }
+    public void compileOperators(TokenType type) {
+        if (type == TokenType.ASTERISK) {
+            ;
+        } else if (type == TokenType.SLASH) {
+            ;
+        } else {
+            ;
+        }
     }
 
 }
