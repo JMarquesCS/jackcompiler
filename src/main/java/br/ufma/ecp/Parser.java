@@ -160,8 +160,11 @@ public class Parser {
         parseParameterList();
         expectPeek(TokenType.RPAREN);
         parseSubroutineBody();
+        parseSubroutineBody(functionName, subroutineType);
         printNonTerminal("/subroutineDec");
     }
+
+     // parameterList
     public void parseParameterList() {
         printNonTerminal("parameterList");
         if (peekTokenIs(TokenType.RPAREN)){
