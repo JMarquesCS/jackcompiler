@@ -180,6 +180,8 @@ public class Parser {
         printNonTerminal("class");
         
         expectPeek(TokenType.CLASS);
+        expectPeek(TokenType.IDENT);
+        className = currentToken.value();
         expectPeek(TokenType.LBRACE);
         while (peekTokenIs(TokenType.STATIC) || peekTokenIs(TokenType.FIELD)) {
             parseClassVarDec();
