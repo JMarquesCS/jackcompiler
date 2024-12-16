@@ -194,7 +194,7 @@ public class Parser {
         printNonTerminal("/class");
     }
 
-    
+
     public void parseSubroutineDec() {
         printNonTerminal("subroutineDec");
         expectPeek(TokenType.CONSTRUCTOR, TokenType.FUNCTION, TokenType.METHOD);
@@ -234,5 +234,21 @@ public class Parser {
         parseStatements();
         expectPeek(TokenType.RBRACE);
         printNonTerminal("/subroutineBody");
+    }
+
+    public void parseVarDec() {
+        printNonTerminal("varDec");
+        expectPeek(TokenType.VAR);
+        expectPeek(TokenType.INT, TokenType.CHAR, TokenType.BOOLEAN, TokenType.IDENT);
+        String type = currentToken.value();
+        expectPeek(TokenType.IDENT);
+        String name = currentToken.value();
+        while (peekTokenIs(TokenType.COMMA)) {
+            expectPeek(TokenType.COMMA);
+            expectPeek(TokenType.IDENT);
+            name = currentToken.value();
+        }
+        expectPeek(TokenType.SEMICOLON);
+        printNonTerminal("/varDec");
     }
 }
